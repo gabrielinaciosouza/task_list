@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:tasklist/app/modules/tasks/presenter/bindings/create_task_binding.dart';
 import 'package:tasklist/app/modules/tasks/presenter/controllers/task_controller.dart';
 import 'package:tasklist/app/modules/tasks/presenter/pages/calendar_page.dart';
@@ -66,16 +67,34 @@ class TaskPage extends GetView<TaskController> {
                             : Expanded(
                                 child: ListView.separated(
                                   itemBuilder: (context, index) {
-                                    ///Change appearance of Completed Task
-                                    ///Say index 1 is completed
+                                    var parsedDate =
+                                        DateTime.parse(_.taskList[index].date);
+                                    String formattedDate =
+                                        DateFormat('dd-MM-yyyy')
+                                            .format(parsedDate);
+
+                                    var parsedTime =
+                                        DateTime.parse(_.taskList[index].time);
+                                    String formattedTime =
+                                        DateFormat('HH:mm').format(parsedTime);
+
+                                    Color color;
+
+                                    if (_.taskList[index].status ==
+                                        'Finalizado') color = Colors.cyan;
+
+                                    if (_.taskList[index].status == 'Andamento')
+                                      color = Colors.blue;
+
+                                    if (_.taskList[index].status == 'Tarefas')
+                                      color = Colors.blueGrey;
+
                                     return Container(
                                       padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                           border: Border.all(
                                               color: Colors.blueGrey[100]),
-                                          color: index == 1
-                                              ? Colors.cyan
-                                              : Colors.transparent),
+                                          color: color),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -93,9 +112,7 @@ class TaskPage extends GetView<TaskController> {
                                                       fontWeight:
                                                           FontWeight.w500,
                                                       fontSize: 16,
-                                                      color: index == 1
-                                                          ? Colors.white
-                                                          : Colors.grey[800]),
+                                                      color: Colors.white),
                                                 ),
                                               ),
 
@@ -104,12 +121,17 @@ class TaskPage extends GetView<TaskController> {
                                                 width: 4,
                                               ),
 
-                                              index == 1
+                                              _.taskList[index].status ==
+                                                      'Finalizado'
                                                   ? Icon(
                                                       Icons.check_circle,
                                                       color: Colors.white,
                                                     )
-                                                  : Container()
+                                                  : Icon(
+                                                      Icons
+                                                          .swap_vertical_circle,
+                                                      color: Colors.white,
+                                                    )
                                             ],
                                           ),
 
@@ -122,18 +144,17 @@ class TaskPage extends GetView<TaskController> {
                                           Row(
                                             children: [
                                               Text(
-                                                "18 NOV 2019",
+                                                formattedDate,
                                                 style: TextStyle(
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: 12,
-                                                    color: index == 1
-                                                        ? Colors.white70
-                                                        : Colors.grey[500]),
+                                                    color: Colors.white70),
                                               ),
                                               Spacer(),
-                                              index == 1
+                                              _.taskList[index].status ==
+                                                      'Finalizado'
                                                   ? Text(
-                                                      "COMPLETED",
+                                                      _.taskList[index].status,
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.w900,
@@ -141,15 +162,13 @@ class TaskPage extends GetView<TaskController> {
                                                           color: Colors.white),
                                                     )
                                                   : Text(
-                                                      "11:00 - 3:00",
+                                                      formattedTime,
                                                       style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.w500,
                                                           fontSize: 12,
-                                                          color: index == 1
-                                                              ? Colors.white70
-                                                              : Colors
-                                                                  .grey[500]),
+                                                          color:
+                                                              Colors.white70),
                                                     ),
                                             ],
                                           )
@@ -202,7 +221,7 @@ class TaskPage extends GetView<TaskController> {
             Container(
               width: MediaQuery.of(context).size.width * 0.22,
               color: Colors.white,
-              height: double.infinity,
+              height: MediaQuery.of(context).size.height,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 32),
               child: Column(
                 children: [
@@ -222,7 +241,7 @@ class TaskPage extends GetView<TaskController> {
                   Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: Colors.red),
+                        color: Colors.blueGrey),
                     padding: const EdgeInsets.all(16),
                     child: Center(
                       child: Text(
@@ -268,7 +287,7 @@ class TaskPage extends GetView<TaskController> {
                   Container(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: Colors.green),
+                        color: Colors.cyan),
                     padding: const EdgeInsets.all(16),
                     child: Center(
                       child: Text(

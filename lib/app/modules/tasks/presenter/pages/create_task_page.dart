@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:tasklist/app/modules/tasks/infra/models/task_model.dart';
+import 'package:tasklist/app/modules/tasks/presenter/bindings/task_binding.dart';
 import 'package:tasklist/app/modules/tasks/presenter/controllers/create_task_controller.dart';
 import 'package:tasklist/app/modules/tasks/presenter/pages/calendar_page.dart';
 import 'package:tasklist/app/modules/tasks/presenter/pages/task_page.dart';
@@ -409,6 +410,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     status: createTaskController.categorie,
                   );
                   createTaskController.createTask.call(task);
+                  Get.off(TaskPage(), binding: TaskBinding());
                 },
               ),
             )
