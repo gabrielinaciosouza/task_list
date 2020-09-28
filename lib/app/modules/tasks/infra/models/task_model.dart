@@ -4,19 +4,18 @@ import 'package:tasklist/app/modules/tasks/external/datasource/database_datasour
 class TaskModel extends Task {
   int id;
   final String title;
-  final String description;
-  final DateTime dateTime;
+  final String time;
+  final String date;
   final String status;
 
-  TaskModel(
-      {this.id, this.title, this.description, this.dateTime, this.status});
+  TaskModel({this.time, this.date, this.id, this.title, this.status});
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return new TaskModel(
       id: map[DatabaseDatasourceImpl.COLUMN_ID] as int,
       title: map[DatabaseDatasourceImpl.COLUMN_TITLE] as String,
-      description: map[DatabaseDatasourceImpl.COLUMN_DESCRIPTION] as String,
-      dateTime: map[DatabaseDatasourceImpl.COLUMN_DATE] as DateTime,
+      time: map[DatabaseDatasourceImpl.COLUMN_TIME] as String,
+      date: map[DatabaseDatasourceImpl.COLUMN_DATE] as String,
       status: map[DatabaseDatasourceImpl.COLUMN_STATUS] as String,
     );
   }
@@ -24,9 +23,9 @@ class TaskModel extends Task {
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       DatabaseDatasourceImpl.COLUMN_TITLE: this.title,
-      DatabaseDatasourceImpl.COLUMN_DESCRIPTION: this.description,
-      DatabaseDatasourceImpl.COLUMN_DATE: this.dateTime,
+      DatabaseDatasourceImpl.COLUMN_DATE: this.date,
       DatabaseDatasourceImpl.COLUMN_STATUS: this.status,
+      DatabaseDatasourceImpl.COLUMN_TIME: this.time,
     };
 
     if (id != null) {

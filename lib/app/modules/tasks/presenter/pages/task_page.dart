@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:tasklist/app/modules/tasks/presenter/bindings/create_task_binding.dart';
+import 'package:tasklist/app/modules/tasks/presenter/controllers/task_controller.dart';
+import 'package:tasklist/app/modules/tasks/presenter/pages/calendar_page.dart';
 import 'create_task_page.dart';
 
-class TaskPage extends StatelessWidget {
+class TaskPage extends GetView<TaskController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,99 +54,117 @@ class TaskPage extends StatelessWidget {
                     ),
 
                     ///List of all the task
-                    Expanded(
-                      child: ListView.separated(
-                        itemBuilder: (context, index) {
-                          ///Change appearance of Completed Task
-                          ///Say index 1 is completed
-                          return Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.blueGrey[100]),
-                                color: index == 1
-                                    ? Colors.cyan
-                                    : Colors.transparent),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ///Show completed check
-                                ///Task Title
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        "Make video for UI challange and upload it today",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 16,
-                                            color: index == 1
-                                                ? Colors.white
-                                                : Colors.grey[800]),
-                                      ),
-                                    ),
-
-                                    ///For Space
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-
-                                    index == 1
-                                        ? Icon(
-                                            Icons.check_circle,
-                                            color: Colors.white,
-                                          )
-                                        : Container()
-                                  ],
-                                ),
-
-                                ///For Space
-                                SizedBox(
-                                  height: 8,
-                                ),
-
-                                ///Task Detail
-                                Row(
-                                  children: [
-                                    Text(
-                                      "18 NOV 2019",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
+                    GetX<TaskController>(
+                      initState: (state) {
+                        Get.find<TaskController>().getAll();
+                      },
+                      builder: (_) {
+                        return _.taskList.length < 1
+                            ? Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Expanded(
+                                child: ListView.separated(
+                                  itemBuilder: (context, index) {
+                                    ///Change appearance of Completed Task
+                                    ///Say index 1 is completed
+                                    return Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.blueGrey[100]),
                                           color: index == 1
-                                              ? Colors.white70
-                                              : Colors.grey[500]),
-                                    ),
-                                    Spacer(),
-                                    index == 1
-                                        ? Text(
-                                            "COMPLETED",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w900,
-                                                fontSize: 12,
-                                                color: Colors.white),
-                                          )
-                                        : Text(
-                                            "11:00 - 3:00",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 12,
-                                                color: index == 1
-                                                    ? Colors.white70
-                                                    : Colors.grey[500]),
+                                              ? Colors.cyan
+                                              : Colors.transparent),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          ///Show completed check
+                                          ///Task Title
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  _.taskList[index].title,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 16,
+                                                      color: index == 1
+                                                          ? Colors.white
+                                                          : Colors.grey[800]),
+                                                ),
+                                              ),
+
+                                              ///For Space
+                                              SizedBox(
+                                                width: 4,
+                                              ),
+
+                                              index == 1
+                                                  ? Icon(
+                                                      Icons.check_circle,
+                                                      color: Colors.white,
+                                                    )
+                                                  : Container()
+                                            ],
                                           ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) => Divider(
-                          height: 16,
-                          color: Colors.transparent,
-                        ),
-                        itemCount: 6,
-                      ),
+
+                                          ///For Space
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+
+                                          ///Task Detail
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "18 NOV 2019",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 12,
+                                                    color: index == 1
+                                                        ? Colors.white70
+                                                        : Colors.grey[500]),
+                                              ),
+                                              Spacer(),
+                                              index == 1
+                                                  ? Text(
+                                                      "COMPLETED",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          fontSize: 12,
+                                                          color: Colors.white),
+                                                    )
+                                                  : Text(
+                                                      "11:00 - 3:00",
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          fontSize: 12,
+                                                          color: index == 1
+                                                              ? Colors.white70
+                                                              : Colors
+                                                                  .grey[500]),
+                                                    ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) => Divider(
+                                    height: 16,
+                                    color: Colors.transparent,
+                                  ),
+                                  itemCount: _.taskList.length,
+                                ),
+                              );
+                      },
                     ),
 
                     ///For spacing
@@ -168,7 +188,8 @@ class TaskPage extends StatelessWidget {
                               fontWeight: FontWeight.w900),
                         ),
                         onPressed: () {
-                          Get.to(CreateTaskPage());
+                          Get.to(CreateTaskPage(),
+                              binding: CreateTaskBinding());
                         },
                       ),
                     )
@@ -276,7 +297,9 @@ class TaskPage extends StatelessWidget {
                       Icons.calendar_today,
                       color: Colors.grey,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.to(CalendarPage(), binding: CreateTaskBinding());
+                    },
                   ),
                 ],
               ),

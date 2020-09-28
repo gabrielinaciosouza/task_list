@@ -3,17 +3,18 @@ import 'package:tasklist/app/modules/tasks/infra/models/task_model.dart';
 import 'package:tasklist/app/modules/tasks/infra/repositories/task_repository_impl.dart';
 import 'package:tasklist/app/modules/tasks/utils/errors/errors.dart';
 
-abstract class CreateTask {
-  Future<Either<InsertError, TaskModel>> call(TaskModel task);
+abstract class GetTask {
+  Future<Either<GetError, List<TaskModel>>> call();
 }
 
-class CreateTaskImpl implements CreateTask {
+class GetTaskImpl implements GetTask {
   final TaskRepositoryImpl repository;
-  CreateTaskImpl(this.repository);
+
+  GetTaskImpl(this.repository);
 
   @override
-  Future<Either<InsertError, TaskModel>> call(TaskModel task) async {
-    var result = await repository.insertTask(task);
+  Future<Either<GetError, List<TaskModel>>> call() async {
+    var result = await repository.getTask();
     var response = result.fold(id, id);
     return Right(response);
   }

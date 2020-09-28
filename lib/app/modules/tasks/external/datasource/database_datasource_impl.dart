@@ -9,11 +9,12 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   static const String TABLE_TASK = 'task';
   static const String COLUMN_ID = 'id';
   static const String COLUMN_TITLE = 'title';
-  static const String COLUMN_DESCRIPTION = 'description';
   static const String COLUMN_STATUS = 'status';
-  static const String COLUMN_DATE = 'dateTime';
+  static const String COLUMN_DATE = 'date';
+  static const String COLUMN_TIME = 'time';
 
   DatabaseDatasourceImpl._();
+  DatabaseDatasourceImpl();
 
   static final DatabaseDatasourceImpl db = DatabaseDatasourceImpl
       ._(); //criando o objeto db que ira acessar essa classe
@@ -23,11 +24,17 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Database> get database async {
     print('database getter called');
 
+    await createDatabase();
+
     if (_database != null) {
+      print('database != null');
       return _database;
     }
 
-    _database = await createDatabase() as Database;
+    var fold = await createDatabase();
+    var resultFold = fold.fold(id, id);
+
+    _database = resultFold;
 
     return _database;
   }
@@ -36,20 +43,28 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<CreateError, Database>> createDatabase() async {
     try {
       String dbPath = await getDatabasesPath();
-      return Right(await openDatabase(join(dbPath, 'taskDB.db'), version: 1,
-          onCreate: (Database database, int version) async {
-        print('Creating task table');
+      return Right(await openDatabase(
+        join(dbPath, 'taskDB.db'),
+        version: 3,
+        onCreate: (database, version) async {
+          print('Creating task table');
 
-        await database.execute('CREATE TABLE $TABLE_TASK ('
-            '$COLUMN_ID INTEGER PRIMARY KEY,'
-            '$COLUMN_TITLE TEXT,'
-            '$COLUMN_STATUS TEXT,'
-            '$COLUMN_DESCRIPTION TEXT,'
-            '$COLUMN_DATE DATETIME'
-            ')');
-      }));
+          await database.execute('CREATE TABLE $TABLE_TASK ('
+              '$COLUMN_ID INTEGER PRIMARY KEY,'
+              '$COLUMN_TITLE TEXT,'
+              '$COLUMN_STATUS TEXT,'
+              '$COLUMN_TIME DATETIME,'
+              '$COLUMN_DATE DATETIME'
+              ')');
+        },
+        onUpgrade: (db, oldVersion, newVersion) async {
+          print('atualizando');
+          await db.execute('ALTER TABLE $TABLE_TASK ADD COLUMN date DATETIME');
+        },
+      ));
     } catch (e) {
-      return Left(CreateError(message: e.toString()));
+      print(e.toString());
+      return Left(CreateError());
     }
   }
 
@@ -61,7 +76,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       var tasks = await db.query(TABLE_TASK, columns: [
         COLUMN_ID,
         COLUMN_TITLE,
-        COLUMN_DESCRIPTION,
+        COLUMN_TIME,
         COLUMN_STATUS,
         COLUMN_DATE
       ]);
@@ -72,9 +87,9 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
         TaskModel task = TaskModel.fromMap(currentTask);
         taskList.add(task);
       });
-
       return Right(taskList);
     } catch (e) {
+      print(e.toString());
       return Left(GetError(message: e.toString()));
     }
   }
@@ -88,6 +103,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
 
       return Right(task);
     } catch (e) {
+      print(e.toString());
       return Left(InsertError(message: e.toString()));
     }
   }
@@ -100,6 +116,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       return Right(
           await db.delete(TABLE_TASK, where: 'id = ?', whereArgs: [id]));
     } catch (e) {
+      print(e.toString());
       return Left(DeleteError(message: e.toString()));
     }
   }
@@ -112,6 +129,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       return Right(await db.update(TABLE_TASK, task.toMap(),
           where: 'id = ?', whereArgs: [task.id]));
     } catch (e) {
+      print(e.toString());
       return Left(UpdateError(message: e.toString()));
     }
   }
