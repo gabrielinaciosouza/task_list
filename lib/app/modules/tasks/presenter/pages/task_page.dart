@@ -60,6 +60,7 @@ class TaskPage extends GetView<TaskController> {
                         Get.find<TaskController>().getAll();
                       },
                       builder: (_) {
+                        print(_.taskList);
                         return _.taskList.length < 1
                             ? Center(
                                 child: CircularProgressIndicator(),
@@ -69,14 +70,55 @@ class TaskPage extends GetView<TaskController> {
                                   itemBuilder: (context, index) {
                                     var parsedDate =
                                         DateTime.parse(_.taskList[index].date);
+
                                     String formattedDate =
                                         DateFormat('dd-MM-yyyy')
                                             .format(parsedDate);
+
+                                    var parsedDate1;
+                                    String formattedDate1;
+                                    if (_.taskList[index].date1 != null) {
+                                      parsedDate1 = DateTime.parse(
+                                          _.taskList[index].date1);
+                                      formattedDate1 = DateFormat('dd-MM-yyyy')
+                                          .format(parsedDate1);
+                                    }
+
+                                    var parsedDate2;
+                                    String formattedDate2;
+                                    if (_.taskList[index].date1 != null) {
+                                      parsedDate2 = DateTime.parse(
+                                          _.taskList[index].date2);
+                                      formattedDate2 = DateFormat('dd-MM-yyyy')
+                                          .format(parsedDate2);
+                                    }
 
                                     var parsedTime =
                                         DateTime.parse(_.taskList[index].time);
                                     String formattedTime =
                                         DateFormat('HH:mm').format(parsedTime);
+
+                                    var parsedTime1;
+                                    String formattedTime1;
+                                    if (_.taskList[index].time1 != null) {
+                                      parsedTime1 = DateTime.parse(
+                                          _.taskList[index].time1);
+                                      formattedTime1 = DateFormat('dd-MM-yyyy')
+                                          .format(parsedTime1);
+                                    }
+
+                                    var parsedTime2;
+                                    String formattedTime2;
+                                    if (_.taskList[index].time2 != null) {
+                                      parsedTime2 = DateTime.parse(
+                                          _.taskList[index].time2);
+                                      formattedDate = DateFormat('dd-MM-yyyy')
+                                          .format(parsedTime2);
+                                    }
+                                    // print(_.taskList[index].time2);
+                                    // print(_.taskList[index].time2);
+                                    // print(_.taskList[index].time1);
+                                    // print(_.taskList[index].time2);
 
                                     Color color;
 
@@ -89,90 +131,203 @@ class TaskPage extends GetView<TaskController> {
                                     if (_.taskList[index].status == 'Tarefas')
                                       color = Colors.blueGrey;
 
-                                    return Container(
-                                      padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.blueGrey[100]),
-                                          color: color),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ///Show completed check
-                                          ///Task Title
-                                          Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  _.taskList[index].title,
+                                    return GestureDetector(
+                                      onTap: () {
+                                        if (_.taskList[index].status ==
+                                            'Tarefas') {
+                                          Get.defaultDialog(
+                                              onConfirm: () async {
+                                                _.taskList[index].status =
+                                                    'Andamento';
+                                                _.taskList[index].date1 =
+                                                    DateTime.now().toString();
+                                                _.taskList[index].time1 =
+                                                    DateTime.now().toString();
+                                                print(_.taskList[index]);
+                                                await _.updateTask
+                                                    .call(_.taskList[index]);
+                                                await _.getAll();
+                                                print(_.taskList[index]);
+                                                Navigator.of(context).pop();
+                                                return;
+                                              },
+                                              textConfirm: 'Confirmar',
+                                              confirmTextColor: Colors.white,
+                                              textCancel: 'Cancelar',
+                                              middleText:
+                                                  'Desaja colocar esta tarefa em Andamento?',
+                                              title: 'Atenção!');
+                                        }
+                                        if (_.taskList[index].status ==
+                                            'Andamento') {
+                                          Get.defaultDialog(
+                                              onConfirm: () async {
+                                                _.taskList[index].status =
+                                                    'Finalizado';
+                                                _.taskList[index].date2 =
+                                                    DateTime.now().toString();
+                                                _.taskList[index].time2 =
+                                                    DateTime.now().toString();
+
+                                                await _.updateTask
+                                                    .call(_.taskList[index]);
+                                                await _.getAll();
+                                                Navigator.of(context).pop();
+                                                return;
+                                              },
+                                              textConfirm: 'Confirmar',
+                                              confirmTextColor: Colors.white,
+                                              textCancel: 'Cancelar',
+                                              middleText:
+                                                  'Desaja finalizar esta Tarefa?',
+                                              title: 'Atenção!');
+                                        }
+                                      },
+                                      onLongPress: () {
+                                        Get.defaultDialog(
+                                            middleText:
+                                                'Deseja remover esta tarefa?',
+                                            title: 'Atenção!',
+                                            confirmTextColor: Colors.white,
+                                            textCancel: 'Cancelar',
+                                            textConfirm: 'Confirmar',
+                                            onConfirm: () async {
+                                              await _.deleteTask.deleteTask(
+                                                  _.taskList[index].id);
+                                              await _.getAll();
+                                              Navigator.of(context).pop();
+                                            });
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.blueGrey[100]),
+                                            color: color),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ///Show completed check
+                                            ///Task Title
+                                            Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    '${_.taskList[index].id} - ${_.taskList[index].title}',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        fontSize: 16,
+                                                        color: Colors.white),
+                                                  ),
+                                                ),
+
+                                                ///For Space
+                                                SizedBox(
+                                                  width: 4,
+                                                ),
+
+                                                _.taskList[index].status ==
+                                                        'Finalizado'
+                                                    ? Icon(Icons.check_circle,
+                                                        color: Colors.white)
+                                                    : Icon(
+                                                        Icons
+                                                            .swap_vertical_circle,
+                                                        color: Colors.white,
+                                                      )
+                                              ],
+                                            ),
+
+                                            ///For Space
+                                            SizedBox(
+                                              height: 8,
+                                            ),
+
+                                            ///Task Detail
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  formattedDate,
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w500,
-                                                      fontSize: 16,
-                                                      color: Colors.white),
+                                                      fontSize: 12,
+                                                      color: Colors.white70),
                                                 ),
-                                              ),
+                                                Spacer(),
+                                                Text(
+                                                  formattedTime,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 12,
+                                                      color: Colors.white70),
+                                                ),
+                                              ],
+                                            ),
 
-                                              ///For Space
-                                              SizedBox(
-                                                width: 4,
-                                              ),
-
-                                              _.taskList[index].status ==
-                                                      'Finalizado'
-                                                  ? Icon(
-                                                      Icons.check_circle,
-                                                      color: Colors.white,
-                                                    )
-                                                  : Icon(
-                                                      Icons
-                                                          .swap_vertical_circle,
-                                                      color: Colors.white,
-                                                    )
-                                            ],
-                                          ),
-
-                                          ///For Space
-                                          SizedBox(
-                                            height: 8,
-                                          ),
-
-                                          ///Task Detail
-                                          Row(
-                                            children: [
-                                              Text(
-                                                formattedDate,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 12,
-                                                    color: Colors.white70),
-                                              ),
-                                              Spacer(),
-                                              _.taskList[index].status ==
-                                                      'Finalizado'
-                                                  ? Text(
-                                                      _.taskList[index].status,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w900,
-                                                          fontSize: 12,
-                                                          color: Colors.white),
-                                                    )
-                                                  : Text(
-                                                      formattedTime,
-                                                      style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          fontSize: 12,
-                                                          color:
-                                                              Colors.white70),
-                                                    ),
-                                            ],
-                                          )
-                                        ],
+                                            Row(
+                                              children: [
+                                                formattedDate1 != null
+                                                    ? Text(
+                                                        formattedDate1,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.white70),
+                                                      )
+                                                    : Container(),
+                                                Spacer(),
+                                                formattedTime1 != null
+                                                    ? Text(
+                                                        formattedTime1,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.white70),
+                                                      )
+                                                    : Container(),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                formattedDate2 != null
+                                                    ? Text(
+                                                        formattedDate2,
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.white70),
+                                                      )
+                                                    : Container(),
+                                                Spacer(),
+                                                _.taskList[index].status ==
+                                                            'Finalizado' &&
+                                                        formattedTime2 != null
+                                                    ? Text(
+                                                        '${_.taskList[index].status} em $formattedTime2',
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w900,
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.white),
+                                                      )
+                                                    : Container(),
+                                              ],
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },

@@ -1,37 +1,120 @@
+import 'dart:convert';
+
 import 'package:tasklist/app/modules/tasks/domain/entities/task.dart';
-import 'package:tasklist/app/modules/tasks/external/datasource/database_datasource_impl.dart';
 
 class TaskModel extends Task {
   int id;
   final String title;
   final String time;
   final String date;
-  final String status;
+  String status;
+  String time1;
+  String date1;
+  String time2;
+  String date2;
 
-  TaskModel({this.time, this.date, this.id, this.title, this.status});
+  TaskModel({
+    this.id,
+    this.title,
+    this.time,
+    this.date,
+    this.status,
+    this.time1,
+    this.date1,
+    this.time2,
+    this.date2,
+  });
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
-    return new TaskModel(
-      id: map[DatabaseDatasourceImpl.COLUMN_ID] as int,
-      title: map[DatabaseDatasourceImpl.COLUMN_TITLE] as String,
-      time: map[DatabaseDatasourceImpl.COLUMN_TIME] as String,
-      date: map[DatabaseDatasourceImpl.COLUMN_DATE] as String,
-      status: map[DatabaseDatasourceImpl.COLUMN_STATUS] as String,
+    if (map == null) return null;
+
+    return TaskModel(
+      id: map['id'],
+      title: map['title'],
+      time: map['time'],
+      date: map['date'],
+      status: map['status'],
+      time1: map['time1'],
+      date1: map['date1'],
+      time2: map['time2'],
+      date2: map['date2'],
     );
   }
 
   Map<String, dynamic> toMap() {
-    var map = <String, dynamic>{
-      DatabaseDatasourceImpl.COLUMN_TITLE: this.title,
-      DatabaseDatasourceImpl.COLUMN_DATE: this.date,
-      DatabaseDatasourceImpl.COLUMN_STATUS: this.status,
-      DatabaseDatasourceImpl.COLUMN_TIME: this.time,
+    return {
+      'id': id,
+      'title': title,
+      'time': time,
+      'date': date,
+      'status': status,
+      'time1': time1,
+      'date1': date1,
+      'time2': time2,
+      'date2': date2,
     };
+  }
 
-    if (id != null) {
-      map[DatabaseDatasourceImpl.COLUMN_ID] = this.id;
-    }
+  TaskModel copyWith({
+    int id,
+    String title,
+    String time,
+    String date,
+    String status,
+    String time1,
+    String date1,
+    String time2,
+    String date2,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      time: time ?? this.time,
+      date: date ?? this.date,
+      status: status ?? this.status,
+      time1: time1 ?? this.time1,
+      date1: date1 ?? this.date1,
+      time2: time2 ?? this.time2,
+      date2: date2 ?? this.date2,
+    );
+  }
 
-    return map;
+  String toJson() => json.encode(toMap());
+
+  factory TaskModel.fromJson(String source) =>
+      TaskModel.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'TaskModel(id: $id, title: $title, time: $time, date: $date, status: $status, time1: $time1, date1: $date1, time2: $time2, date2: $date2)';
+  }
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is TaskModel &&
+        o.id == id &&
+        o.title == title &&
+        o.time == time &&
+        o.date == date &&
+        o.status == status &&
+        o.time1 == time1 &&
+        o.date1 == date1 &&
+        o.time2 == time2 &&
+        o.date2 == date2;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        title.hashCode ^
+        time.hashCode ^
+        date.hashCode ^
+        status.hashCode ^
+        time1.hashCode ^
+        date1.hashCode ^
+        time2.hashCode ^
+        date2.hashCode;
   }
 }

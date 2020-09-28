@@ -7,5 +7,4 @@ abstract class TaskRepository {
   Future<Either<InsertError, TaskModel>> insertTask(TaskModel task);
   Future<Either<UpdateError, int>> updateTask(TaskModel task);
   Future<Either<DeleteError, int>> deleteTask(int id);
-  Either<GetError, DateTime> getTimeDate();
 }

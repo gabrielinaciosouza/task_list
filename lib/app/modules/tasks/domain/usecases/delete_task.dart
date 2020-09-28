@@ -12,9 +12,9 @@ class DeleteTaskImpl implements DeleteTask {
   DeleteTaskImpl(this.repository);
 
   @override
-  Future<Either<DeleteError, int>> deleteTask(int id) async {
-    var result = await repository.deleteTask(id);
-    return result.where(
-        (r) => r.isFinite, () => DeleteError(message: 'Id da tarefa é nulo'));
+  Future<Either<DeleteError, int>> deleteTask(int ids) async {
+    final result = await repository.deleteTask(ids);
+    var response = result.fold(id, id);
+    return Right(response);
   }
 }

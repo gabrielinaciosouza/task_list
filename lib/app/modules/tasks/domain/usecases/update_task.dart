@@ -15,7 +15,7 @@ class UpdateTaskImpl implements UpdateTask {
   @override
   Future<Either<UpdateError, int>> call(TaskModel task) async {
     var result = await repository.updateTask(task);
-    return result.where(
-        (r) => r.isFinite, () => UpdateError(message: 'Id da tarefa é nulo'));
+    var response = result.fold(id, id);
+    return Right(response);
   }
 }

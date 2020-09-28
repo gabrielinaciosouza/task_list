@@ -10,10 +10,11 @@ class TaskRepositoryImpl implements TaskRepository {
   TaskRepositoryImpl(this.datasource);
 
   @override
-  Future<Either<DeleteError, int>> deleteTask(int id) async {
+  Future<Either<DeleteError, int>> deleteTask(int ids) async {
     try {
-      final result = await datasource.deleteTask(id) as int;
-      return Right(result);
+      final result = await datasource.deleteTask(ids);
+      var response = result.fold(id, id);
+      return Right(response);
     } on DeleteError catch (e) {
       return Left(e);
     }
@@ -49,20 +50,12 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<Either<UpdateError, int>> updateTask(TaskModel task) async {
     try {
-      final result = await datasource.updateTask(task) as int;
-      return Right(result);
+      final result = await datasource.updateTask(task);
+      var response = result.fold(id, id);
+      print(response.toString());
+      return Right(response);
     } on UpdateError catch (e) {
       return Left(e);
-    }
-  }
-
-  @override
-  Either<GetError, DateTime> getTimeDate() {
-    try {
-      var currentTime = DateTime.now();
-      return Right(currentTime);
-    } catch (e) {
-      return Left(GetError(message: 'Erro ao pegar Data e Hora'));
     }
   }
 }

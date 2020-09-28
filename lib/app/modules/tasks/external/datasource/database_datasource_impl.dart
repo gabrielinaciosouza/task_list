@@ -45,7 +45,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       String dbPath = await getDatabasesPath();
       return Right(await openDatabase(
         join(dbPath, 'taskDB.db'),
-        version: 3,
+        version: 7,
         onCreate: (database, version) async {
           print('Creating task table');
 
@@ -59,7 +59,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           print('atualizando');
-          await db.execute('ALTER TABLE $TABLE_TASK ADD COLUMN date DATETIME');
+          await db.execute('ALTER TABLE $TABLE_TASK ADD COLUMN time2 DATETIME');
         },
       ));
     } catch (e) {
@@ -125,6 +125,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<UpdateError, int>> updateTask(TaskModel task) async {
     try {
       final db = await database;
+      print(task.toMap());
 
       return Right(await db.update(TABLE_TASK, task.toMap(),
           where: 'id = ?', whereArgs: [task.id]));
