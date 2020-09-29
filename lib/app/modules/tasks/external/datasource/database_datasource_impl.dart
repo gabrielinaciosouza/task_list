@@ -60,8 +60,8 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
               '$COLUMN_TIME TEXT,'
               '$COLUMN_TIME1 TEXT,'
               '$COLUMN_TIME2 TEXT,'
-              '$COLUMN_DATE TEXT'
-              '$COLUMN_DATE1 TEXT'
+              '$COLUMN_DATE TEXT,'
+              '$COLUMN_DATE1 TEXT,'
               '$COLUMN_DATE2 TEXT'
               ')');
         },
