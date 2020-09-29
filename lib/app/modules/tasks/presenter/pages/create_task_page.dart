@@ -60,7 +60,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     borderSide: BorderSide(color: Colors.blueGrey[100])),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.blueGrey[100])),
-                hintText: "Título",
+                hintText: "Descrição",
                 hintStyle: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w500,
@@ -403,14 +403,20 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       color: Colors.white),
                 ),
                 onPressed: () {
-                  var task = TaskModel(
-                    title: titleController.text,
-                    date: createTaskController.currentDate.toString(),
-                    time: createTaskController.currentTime.toString(),
-                    status: createTaskController.categorie,
-                  );
-                  createTaskController.createTask.call(task);
-                  Get.off(TaskPage(), binding: TaskBinding());
+                  if (titleController.text.isNotEmpty &&
+                      titleController.text != null) {
+                    var task = TaskModel(
+                      title: titleController.text,
+                      date: createTaskController.currentDate.toString(),
+                      time: createTaskController.currentTime.toString(),
+                      status: createTaskController.categorie,
+                    );
+                    createTaskController.createTask.call(task);
+                    Get.off(TaskPage(), binding: TaskBinding());
+                  } else {
+                    Get.snackbar('Atenção!', 'Necessário descrever a tarefa',
+                        backgroundColor: Colors.red);
+                  }
                 },
               ),
             )

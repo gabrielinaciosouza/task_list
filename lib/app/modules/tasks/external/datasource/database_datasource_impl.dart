@@ -11,7 +11,11 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   static const String COLUMN_TITLE = 'title';
   static const String COLUMN_STATUS = 'status';
   static const String COLUMN_DATE = 'date';
+  static const String COLUMN_DATE1 = 'date1';
+  static const String COLUMN_DATE2 = 'date2';
   static const String COLUMN_TIME = 'time';
+  static const String COLUMN_TIME1 = 'time1';
+  static const String COLUMN_TIME2 = 'time2';
 
   DatabaseDatasourceImpl._();
   DatabaseDatasourceImpl();
@@ -45,7 +49,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       String dbPath = await getDatabasesPath();
       return Right(await openDatabase(
         join(dbPath, 'taskDB.db'),
-        version: 7,
+        version: 3,
         onCreate: (database, version) async {
           print('Creating task table');
 
@@ -53,13 +57,17 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
               '$COLUMN_ID INTEGER PRIMARY KEY,'
               '$COLUMN_TITLE TEXT,'
               '$COLUMN_STATUS TEXT,'
-              '$COLUMN_TIME DATETIME,'
-              '$COLUMN_DATE DATETIME'
+              '$COLUMN_TIME TEXT,'
+              '$COLUMN_TIME1 TEXT,'
+              '$COLUMN_TIME2 TEXT,'
+              '$COLUMN_DATE TEXT'
+              '$COLUMN_DATE1 TEXT'
+              '$COLUMN_DATE2 TEXT'
               ')');
         },
         onUpgrade: (db, oldVersion, newVersion) async {
           print('atualizando');
-          await db.execute('ALTER TABLE $TABLE_TASK ADD COLUMN time2 DATETIME');
+          await db.execute('ALTER TABLE $TABLE_TASK ADD COLUMN date2 TEXT');
         },
       ));
     } catch (e) {
@@ -78,7 +86,11 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
         COLUMN_TITLE,
         COLUMN_TIME,
         COLUMN_STATUS,
-        COLUMN_DATE
+        COLUMN_DATE,
+        COLUMN_DATE1,
+        COLUMN_DATE2,
+        COLUMN_TIME1,
+        COLUMN_TIME2
       ]);
 
       List<TaskModel> taskList = List<TaskModel>();
