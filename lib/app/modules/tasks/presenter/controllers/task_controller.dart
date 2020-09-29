@@ -76,9 +76,17 @@ class TaskController extends GetxController {
   String get statusBuild => _statusBuild.value;
   set statusBuild(value) => _statusBuild.value = value;
 
-  getAll() {
-    getTask.call().then((value) {
+  var _error = ''.obs;
+  String get error => _error.value;
+  set error(value) => _error.value = value;
+
+  getAll() async {
+    await getTask.call().then((value) {
       var response = value.fold(id, id);
+      if (response is String) {
+        this.error = response;
+        return;
+      }
       this.taskList = response;
       update();
     });

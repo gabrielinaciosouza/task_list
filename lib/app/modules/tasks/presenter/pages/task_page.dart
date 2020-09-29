@@ -5,6 +5,7 @@ import 'package:tasklist/app/modules/tasks/infra/models/task_model.dart';
 import 'package:tasklist/app/modules/tasks/presenter/bindings/create_task_binding.dart';
 import 'package:tasklist/app/modules/tasks/presenter/controllers/task_controller.dart';
 import 'package:tasklist/app/modules/tasks/presenter/pages/calendar_page.dart';
+import 'package:tasklist/app/modules/tasks/presenter/pages/error_page.dart';
 import 'create_task_page.dart';
 
 class TaskPage extends GetView<TaskController> {
@@ -13,6 +14,10 @@ class TaskPage extends GetView<TaskController> {
     return GetX<TaskController>(initState: (state) {
       Get.find<TaskController>().getAll();
     }, builder: (_) {
+      if (_.error != '') {
+        return ErrorPage(error: _.error);
+      }
+
       List<TaskModel> list = _.onlyTaskList;
       if (_.statusBuild == 'Tarefas') {
         list = _.onlyTaskList;
@@ -153,11 +158,27 @@ class TaskPage extends GetView<TaskController> {
                                                   DateTime.now().toString();
                                               list[index].time1 =
                                                   DateTime.now().toString();
-                                              print(list[index]);
-                                              await _.updateTask
+
+                                              var result = await _.updateTask
                                                   .call(list[index]);
+                                              var response = result.fold(
+                                                  (l) => result, (r) => result);
+
+                                              if (response is String) {
+                                                return Get.snackbar(
+                                                    'Erro!', result as String,
+                                                    backgroundColor:
+                                                        Colors.red);
+                                              }
+
                                               await _.getAll();
-                                              print(list[index]);
+
+                                              if (_.error != '') {
+                                                return Get.snackbar(
+                                                    'Erro!', _.error,
+                                                    backgroundColor:
+                                                        Colors.red);
+                                              }
                                               Navigator.of(context).pop();
                                               return;
                                             },
@@ -177,11 +198,25 @@ class TaskPage extends GetView<TaskController> {
                                               list[index].time2 =
                                                   DateTime.now().toString();
 
-                                              await _.updateTask
+                                              var result = await _.updateTask
                                                   .call(list[index]);
+                                              var response = result.fold(
+                                                  (l) => result, (r) => result);
+                                              if (response is String) {
+                                                return Get.snackbar(
+                                                    'Erro!', response as String,
+                                                    backgroundColor:
+                                                        Colors.red);
+                                              }
                                               await _.getAll();
+
+                                              if (_.error != '') {
+                                                return Get.snackbar(
+                                                    'Erro!', _.error,
+                                                    backgroundColor:
+                                                        Colors.red);
+                                              }
                                               Navigator.of(context).pop();
-                                              return;
                                             },
                                             textConfirm: 'Confirmar',
                                             confirmTextColor: Colors.white,
@@ -200,9 +235,24 @@ class TaskPage extends GetView<TaskController> {
                                           textCancel: 'Cancelar',
                                           textConfirm: 'Confirmar',
                                           onConfirm: () async {
-                                            await _.deleteTask
+                                            var result = await _.deleteTask
                                                 .deleteTask(list[index].id);
+                                            var response = result.fold(
+                                                (l) => result, (r) => result);
+
+                                            if (response is String) {
+                                              return Get.snackbar(
+                                                  'Erro!', response as String,
+                                                  backgroundColor: Colors.red);
+                                            }
                                             await _.getAll();
+
+                                            if (_.error != '') {
+                                              return Get.snackbar(
+                                                  'Erro!', _.error,
+                                                  backgroundColor: Colors.red);
+                                            }
+
                                             Navigator.of(context).pop();
                                           });
                                     },
@@ -364,7 +414,7 @@ class TaskPage extends GetView<TaskController> {
                                 fontWeight: FontWeight.w900),
                           ),
                           onPressed: () {
-                            Get.to(CreateTaskPage(),
+                            Get.off(CreateTaskPage(),
                                 binding: CreateTaskBinding());
                           },
                         ),

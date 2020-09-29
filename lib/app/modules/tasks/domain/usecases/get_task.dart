@@ -1,10 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:tasklist/app/modules/tasks/infra/models/task_model.dart';
 import 'package:tasklist/app/modules/tasks/infra/repositories/task_repository_impl.dart';
-import 'package:tasklist/app/modules/tasks/utils/errors/errors.dart';
 
 abstract class GetTask {
-  Future<Either<GetError, List<TaskModel>>> call();
+  Future<Either<String, List<TaskModel>>> call();
 }
 
 class GetTaskImpl implements GetTask {
@@ -13,9 +12,12 @@ class GetTaskImpl implements GetTask {
   GetTaskImpl(this.repository);
 
   @override
-  Future<Either<GetError, List<TaskModel>>> call() async {
+  Future<Either<String, List<TaskModel>>> call() async {
     var result = await repository.getTask();
     var response = result.fold(id, id);
+    if (response is String) {
+      return Left(response);
+    }
     return Right(response);
   }
 }

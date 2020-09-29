@@ -28,17 +28,22 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Database> get database async {
     print('database getter called');
 
-    await createDatabase();
-
     if (_database != null) {
       print('database != null');
       return _database;
     }
+    var result;
+    var response;
 
-    var fold = await createDatabase();
-    var resultFold = fold.fold(id, id);
+    try {
+      result = await createDatabase();
+      response = result.fold(id, id);
+    } on CreateError catch (e) {
+      print(e.message);
+      return _database = null;
+    }
 
-    _database = resultFold;
+    _database = response;
 
     return _database;
   }
@@ -66,13 +71,11 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
               ')');
         },
         onUpgrade: (db, oldVersion, newVersion) async {
-          print('atualizando');
           await db.execute('ALTER TABLE $TABLE_TASK ADD COLUMN date2 TEXT');
         },
       ));
     } catch (e) {
-      print(e.toString());
-      return Left(CreateError());
+      return Left(CreateError(message: e.toString()));
     }
   }
 
@@ -80,6 +83,9 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<GetError, List<TaskModel>>> getTask() async {
     try {
       final db = await database;
+      if (db == null) {
+        return Left(GetError(message: 'Erro ao criar Database!'));
+      }
 
       var tasks = await db.query(TABLE_TASK, columns: [
         COLUMN_ID,
@@ -101,8 +107,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       });
       return Right(taskList);
     } catch (e) {
-      print(e.toString());
-      return Left(GetError(message: e.toString()));
+      return Left(GetError(message: 'Erro ao carregar os Dados!'));
     }
   }
 
@@ -110,13 +115,17 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<InsertError, TaskModel>> insertTask(TaskModel task) async {
     try {
       final db = await database;
+      if (db == null) {
+        return Left(InsertError(
+            message: 'Erro na DataBase ao inserir dados (db nula)!'));
+      }
 
       task.id = await db.insert(TABLE_TASK, task.toMap());
 
       return Right(task);
     } catch (e) {
-      print(e.toString());
-      return Left(InsertError(message: e.toString()));
+      return Left(
+          InsertError(message: 'Erro ao inserir os dados na DataBase!'));
     }
   }
 
@@ -124,12 +133,15 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<DeleteError, int>> deleteTask(int id) async {
     try {
       final db = await database;
+      if (db == null) {
+        return Left(DeleteError(
+            message: 'Erro na DataBase ao deletar dados (db nula)!'));
+      }
 
       return Right(
           await db.delete(TABLE_TASK, where: 'id = ?', whereArgs: [id]));
     } catch (e) {
-      print(e.toString());
-      return Left(DeleteError(message: e.toString()));
+      return Left(DeleteError(message: 'Erro ao deletar dados na DataBase!'));
     }
   }
 
@@ -137,13 +149,16 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<UpdateError, int>> updateTask(TaskModel task) async {
     try {
       final db = await database;
-      print(task.toMap());
+
+      if (db == null) {
+        return Left(UpdateError(
+            message: 'Erro na DataBase ao atualizar dados (db nula)!'));
+      }
 
       return Right(await db.update(TABLE_TASK, task.toMap(),
           where: 'id = ?', whereArgs: [task.id]));
     } catch (e) {
-      print(e.toString());
-      return Left(UpdateError(message: e.toString()));
+      return Left(UpdateError(message: 'Erro ao atualizar dados na DataBase!'));
     }
   }
 }

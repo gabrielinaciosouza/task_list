@@ -1,10 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:tasklist/app/modules/tasks/infra/models/task_model.dart';
 import 'package:tasklist/app/modules/tasks/infra/repositories/task_repository_impl.dart';
-import 'package:tasklist/app/modules/tasks/utils/errors/errors.dart';
 
 abstract class UpdateTask {
-  Future<Either<UpdateError, int>> call(TaskModel task);
+  Future<Either<String, int>> call(TaskModel task);
 }
 
 class UpdateTaskImpl implements UpdateTask {
@@ -13,9 +12,12 @@ class UpdateTaskImpl implements UpdateTask {
   UpdateTaskImpl(this.repository);
 
   @override
-  Future<Either<UpdateError, int>> call(TaskModel task) async {
+  Future<Either<String, int>> call(TaskModel task) async {
     var result = await repository.updateTask(task);
     var response = result.fold(id, id);
+    if (response is String) {
+      return Left(response);
+    }
     return Right(response);
   }
 }

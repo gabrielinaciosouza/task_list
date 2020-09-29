@@ -27,7 +27,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Get.off(TaskPage());
+            Get.off(TaskPage(), binding: TaskBinding());
           },
           color: Colors.grey[800],
         ),
@@ -402,7 +402,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       fontSize: 18,
                       color: Colors.white),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   if (titleController.text.isNotEmpty &&
                       titleController.text != null) {
                     var task = TaskModel(
@@ -411,8 +411,15 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       time: createTaskController.currentTime.toString(),
                       status: createTaskController.categorie,
                     );
-                    createTaskController.createTask.call(task);
-                    Get.off(TaskPage(), binding: TaskBinding());
+                    var result =
+                        await createTaskController.createTask.call(task);
+                    var response = result.fold((l) => result, (r) => result);
+                    if (response is TaskModel) {
+                      Get.off(TaskPage(), binding: TaskBinding());
+                    } else {
+                      Get.snackbar('Erro!', result as String,
+                          backgroundColor: Colors.red);
+                    }
                   } else {
                     Get.snackbar('Atenção!', 'Necessário descrever a tarefa',
                         backgroundColor: Colors.red);

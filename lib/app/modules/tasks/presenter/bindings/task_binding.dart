@@ -12,7 +12,7 @@ import '../controllers/task_controller.dart';
 class TaskBinding implements Bindings {
   @override
   void dependencies() {
-    Get.put(TaskController(
+    Get.lazyPut<TaskController>(() => TaskController(
         getTask: GetTaskImpl(TaskRepositoryImpl(DatabaseDatasourceImpl())),
         updateTask:
             UpdateTaskImpl(TaskRepositoryImpl(DatabaseDatasourceImpl())),

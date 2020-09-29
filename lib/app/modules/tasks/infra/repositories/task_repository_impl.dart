@@ -10,52 +10,58 @@ class TaskRepositoryImpl implements TaskRepository {
   TaskRepositoryImpl(this.datasource);
 
   @override
-  Future<Either<DeleteError, int>> deleteTask(int ids) async {
+  Future<Either<String, int>> deleteTask(int ids) async {
     try {
       final result = await datasource.deleteTask(ids);
       var response = result.fold(id, id);
+      if (response == null) {
+        return Left('Resposta nulla ao deletar!');
+      }
       return Right(response);
     } on DeleteError catch (e) {
-      return Left(e);
+      return Left(e.message);
     }
   }
 
   @override
-  Future<Either<GetError, List<TaskModel>>> getTask() async {
+  Future<Either<String, List<TaskModel>>> getTask() async {
     try {
       final result = await datasource.getTask();
       var response = result.fold(id, id);
       if (response == null) {
-        return Left(GetError(message: 'Tabela nula'));
+        return Left('Resposta nula ao pegar os dados!');
       }
       return Right(response);
-    } catch (e) {
-      print(e.toString());
-      return Left(e);
+    } on GetError catch (e) {
+      return Left(e.message);
     }
   }
 
   @override
-  Future<Either<InsertError, TaskModel>> insertTask(TaskModel task) async {
+  Future<Either<String, TaskModel>> insertTask(TaskModel task) async {
     try {
       final result = await datasource.insertTask(task);
       final response = result.fold(id, id);
-      print(response);
+      if (response == null) {
+        return Left('Resposta nula ao inserir os dados!');
+      }
       return Right(response);
     } on InsertError catch (e) {
-      return Left(e);
+      return Left(e.message);
     }
   }
 
   @override
-  Future<Either<UpdateError, int>> updateTask(TaskModel task) async {
+  Future<Either<String, int>> updateTask(TaskModel task) async {
     try {
       final result = await datasource.updateTask(task);
       var response = result.fold(id, id);
-      print(response.toString());
+      if (response == null) {
+        return Left('Resposta nula ao atualizar os dados!');
+      }
       return Right(response);
     } on UpdateError catch (e) {
-      return Left(e);
+      return Left(e.message);
     }
   }
 }
