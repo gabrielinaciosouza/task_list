@@ -35,12 +35,12 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
     var result;
     var response;
 
-    try {
-      result = await createDatabase();
-      response = result.fold(id, id);
-    } on CreateError catch (e) {
-      print(e.message);
+    result = await createDatabase();
+    if (result is CreateError) {
       return _database = null;
+    }
+    if (result is Right) {
+      response = result.fold(id, id);
     }
 
     _database = response;
@@ -54,7 +54,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
       String dbPath = await getDatabasesPath();
       return Right(await openDatabase(
         join(dbPath, 'taskDB.db'),
-        version: 3,
+        version: 1,
         onCreate: (database, version) async {
           print('Creating task table');
 
@@ -83,6 +83,7 @@ class DatabaseDatasourceImpl extends DatabaseDatasource {
   Future<Either<GetError, List<TaskModel>>> getTask() async {
     try {
       final db = await database;
+
       if (db == null) {
         return Left(GetError(message: 'Erro ao criar Database!'));
       }

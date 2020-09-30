@@ -413,11 +413,12 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                     );
                     var result =
                         await createTaskController.createTask.call(task);
-                    var response = result.fold((l) => result, (r) => result);
+                    var response = createTaskController.foldValue(result);
+                    print(response);
                     if (response is TaskModel) {
                       Get.off(TaskPage(), binding: TaskBinding());
                     } else {
-                      Get.snackbar('Erro!', result as String,
+                      Get.snackbar('Erro!', response as String,
                           backgroundColor: Colors.red);
                     }
                   } else {

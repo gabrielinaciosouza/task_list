@@ -80,6 +80,10 @@ class TaskController extends GetxController {
   String get error => _error.value;
   set error(value) => _error.value = value;
 
+  TaskModel foldValue(Either<String, int> value) {
+    return value.fold(id, id) as TaskModel;
+  }
+
   getAll() async {
     await getTask.call().then((value) {
       var response = value.fold(id, id);

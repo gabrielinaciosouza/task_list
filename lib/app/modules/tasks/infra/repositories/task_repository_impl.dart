@@ -31,6 +31,9 @@ class TaskRepositoryImpl implements TaskRepository {
       if (response == null) {
         return Left('Resposta nula ao pegar os dados!');
       }
+      if (response is GetError) {
+        return Left(response.message);
+      }
       return Right(response);
     } on GetError catch (e) {
       return Left(e.message);

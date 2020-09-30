@@ -1,6 +1,8 @@
+import 'package:dartz/dartz.dart';
 import 'package:get/get.dart';
 import 'package:meta/meta.dart';
 import 'package:tasklist/app/modules/tasks/domain/usecases/create_task.dart';
+import 'package:tasklist/app/modules/tasks/infra/models/task_model.dart';
 
 class CreateTaskController extends GetxController {
   final CreateTask createTask;
@@ -27,4 +29,8 @@ class CreateTaskController extends GetxController {
   final _categorie = 'Tarefas'.obs;
   set categorie(value) => this._categorie.value = value;
   String get categorie => this._categorie.value;
+
+  TaskModel foldValue(Either<String, TaskModel> value) {
+    return value.fold(id, id) as TaskModel;
+  }
 }

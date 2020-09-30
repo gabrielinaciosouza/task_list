@@ -161,8 +161,8 @@ class TaskPage extends GetView<TaskController> {
 
                                               var result = await _.updateTask
                                                   .call(list[index]);
-                                              var response = result.fold(
-                                                  (l) => result, (r) => result);
+                                              var response =
+                                                  _.foldValue(result);
 
                                               if (response is String) {
                                                 return Get.snackbar(
@@ -200,8 +200,8 @@ class TaskPage extends GetView<TaskController> {
 
                                               var result = await _.updateTask
                                                   .call(list[index]);
-                                              var response = result.fold(
-                                                  (l) => result, (r) => result);
+                                              var response =
+                                                  _.foldValue(result);
                                               if (response is String) {
                                                 return Get.snackbar(
                                                     'Erro!', response as String,
@@ -237,8 +237,7 @@ class TaskPage extends GetView<TaskController> {
                                           onConfirm: () async {
                                             var result = await _.deleteTask
                                                 .deleteTask(list[index].id);
-                                            var response = result.fold(
-                                                (l) => result, (r) => result);
+                                            var response = _.foldValue(result);
 
                                             if (response is String) {
                                               return Get.snackbar(

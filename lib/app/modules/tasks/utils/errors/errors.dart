@@ -28,4 +28,7 @@ class InsertError implements DatabaseError {
   final String message;
 
   InsertError({this.message});
+
+  @override
+  String toString() => 'InsertError(message: $message)';
 }

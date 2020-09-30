@@ -8,12 +8,10 @@ class ErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Expanded(
-        child: Center(
-          child: Text(
-            error,
-            style: TextStyle(fontSize: 24),
-          ),
+      body: Center(
+        child: Text(
+          error,
+          style: TextStyle(fontSize: 24),
         ),
       ),
     );
